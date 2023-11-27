@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" 
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="style.scss">
+    <title>AJAX</title>
+</head>
+<body>
+        <!--navbar container-->
+    <header></header>
+    <script>
+        function loadNavbar(location, element) {
+            let xhr = new XMLHttpRequest();
+            xhr.open("GET", location);
+            xhr.onload = function () {
+                if (xhr.status == 200) {
+                    document.querySelector(element).innerHTML = xhr.responseText;
+                }
+            }
+            xhr.send();
+        }
+        loadNavbar("navbar.html", "header");
+    </script>
+    <div class="container my-5">
+        <h2>Ajax and XML</h2>
+        <form action="">
+            <input id="loadFile" type="submit" value="Load file" name='Submit' class="btn btn-success">   
+        </form>
+        <hr>
+        <div id="content" class="row row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-xs-1 g-3"></div> 
+    </div>
+        <script>
+        let btnLoad = document.getElementById('loadFile');
+        btnLoad.addEventListener('click', loadXML);
+        function loadXML(e) {
+            e.preventDefault();      
+            let ajReq = new XMLHttpRequest();
+            ajReq.open("GET", "songs.xml");
+            ajReq.onload = function () {
+                if (this.status == 200) {
+                    convertXml(this.responseXML);//this is the entire object, could be this.responseXML instead
+                }
+            }
+            ajReq.send();
+        }
+        function convertXml(xml) {
+            // console.log(typeof xml)
+            let cards = xml.getElementsByTagName('song');
+            let content = document.getElementById('content');
+            for (let i = 0; i < cards.length; i++) {
+                content.innerHTML += `
+                <div class="col text-center">
+                    <div class="card myCard style="height: 400px">
+                    <img src="${cards[i].getElementsByTagName('image')[0].childNodes[0].nodeValue}" style="height: 200px" class="card-img-top cardImg" alt="${cards[i].getElementsByTagName('artist')[0].childNodes[0].nodeValue}">
+                        <div class="card-body">
+                        <h5 class="card-title">${cards[i].getElementsByTagName('artist')[0].childNodes[0].nodeValue}</h5>
+                        <p class="card-text">${cards[i].getElementsByTagName('title')[0].childNodes[0].nodeValue}</p>
+                        <p class="card-text">${cards[i].getElementsByTagName('genre')[0].childNodes[0].nodeValue}</p>
+                        <p class="card-text">${cards[i].getElementsByTagName('year')[0].childNodes[0].nodeValue}</p>
+                        <p class="card-text">${cards[i].getElementsByTagName('country')[0].childNodes[0].nodeValue}</p>
+                        </div>
+                    </div>
+                </div> `
+            }                          
+        }
+    </script>
+
+<script>
+    function showBooks() {
+        let xhttp = new XMLHttpRequest();
+
+        xhttp.onload = function () {
+            if (this.status == 200) {
+                let content = document.getElementById('content');
+                let books = this.responseXML.getElementsByTagName('book');
+                for(let i = 0; i< books.length; i++){
+                    content.innerHTML += `
+                        <h2>Title of the book is: ${books[i].getElementsByTagName('title')[0].childNodes[0].nodeValue}</h2>
+                        <hr>
+                    `
+                }
+              // console.log(this.responseXML.getElementsByTagName('library')[0].getElementsByTagName('book')[1].getElementsByTagName('title')[0].childNodes[0].nodeValue);
+                   
+            }
+        };
+        xhttp.open("GET", "data.xml", true);
+        xhttp.send();
+    }
+
+    showBooks();
+
+</script>
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" 
+    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
+    </script>
+</body>
+</html>
